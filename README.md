@@ -67,7 +67,30 @@ Important Parameters:
 - *n_leds:* How many LEDs there are in each strip. For custom installations it may be nessary to count, or to upload debug patterns to precisely determine this number. Incorrect values with result in lost pixels. 
 - *led_dirs:* Which direction each strip runs relative to the direction of signal. You can pick either clockwise or counter-clockwise as the logic direction, but it must remain consistent to prevent animation jumps. Clockwise is a good default. 
 ## Windows Setup: 
-Write-up Coming Soon!
+The Windows install instructions assume that you have Version 2.x.x of the Arduino IDE installed, along with teensyduino which is used to upload code to the Teensy. Instructions for installing teensyduino (and links to arduino installers) can be found here: https://www.pjrc.com/teensy/teensyduino.html. It is definitely worth checking that your install works by uploading one of the teensy example scripts before proceeding. 
+
+Setting up the build environment is pretty straightforward, but it does involve mucking around in the arduino libraries folder. If you have any questions definitely feel free to reach out. 
+
+Using the arduino IDE Install: 
+(Sketch -> Include Library -> Manage Libraries...)
+ - SD
+ - TFT_eSPI
+ - lvgl
+ - arduinoFFT (for debugging, optional)
+ 
+ Navigate to your a libraries folder (likely C:/Users/[Name]/Documents/Arduino/libraries) and clone the [arduinoLua](https://github.com/blackketter/LuaArduino) repo. 
+ 
+ Now copy the lv_conf.h file from /aurora_sw/src/ to the top level of your Arduino libraries folder. This configures the GUI generator.
+ 
+ In your arduino libraries folder, replace TFT_eSPI/User_Setup.h with the User_Setup.h file provided in aurora_sw/src/. This configures the pins and dimensions of the display itself. 
+  
+ You can now open src.ino with the Arduino IDE. 
+
+ Select the board type "Teensy 4.0" (DMA is hardware-specific and won't compile for other devices). 
+ 
+ Before uploading you will need to set the optimizer (tools -> optimize) to "Smallest Code".
+ 
+ You are now ready to upload!
 
 ## Linux Setup: 
 The Linux install instructions assume that you have Version 1.x.x of the Arduino IDE installed, along with teensyduino which is used to upload code to the Teensy. Instructions for installing teensyduino (and links to arduino installers) can be found here: https://www.pjrc.com/teensy/teensyduino.html. It is definitely worth checking that your install works by uploading one of the teensy example scripts before proceeding. 

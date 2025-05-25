@@ -5,8 +5,7 @@
 #include <Metro.h>
 
 
-using namespace std;
-
+using std::vector;
 
 namespace ui {
 

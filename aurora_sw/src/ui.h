@@ -10,8 +10,7 @@
 #include "pattern.h"
 
 
-using namespace std;
-
+using std::vector;
 
 #define PIN_ENCODER_A 21
 #define PIN_ENCODER_B 22
