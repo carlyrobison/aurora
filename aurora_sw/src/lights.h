@@ -8,7 +8,7 @@
 
 #define N_STRIPS 2
 #define LEDS_PER_STRIP 529
-#define N_LEDS 1052
+#define N_LEDS 1058
 
 const int n_leds[N_STRIPS] = {529, 529};
 const int led_dirs[N_STRIPS] = {-1, 1};
