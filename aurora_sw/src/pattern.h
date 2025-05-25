@@ -6,8 +6,8 @@
 #include <LuaArduino.h>
 
 
-using namespace std;
-
+using std::string;
+using std::unordered_map;
 
 struct Param {
     void *pat;
