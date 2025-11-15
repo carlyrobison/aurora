@@ -73,10 +73,10 @@ Setting up the build environment is pretty straightforward, but it does involve 
 
 Using the arduino IDE Install: 
 (Sketch -> Include Library -> Manage Libraries...)
- - SD
- - TFT_eSPI
- - lvgl
- - arduinoFFT (for debugging, optional)
+ - SD, Version 1.3.0 or later. 
+ - TFT_eSPI, Version 2.5.43 or later. 
+ - lvgl, Version 8.4.0 exactly. 
+ - arduinoFFT (for debugging, optional))
  
  Navigate to your a libraries folder (likely C:/Users/[Name]/Documents/Arduino/libraries) and clone the [arduinoLua](https://github.com/blackketter/LuaArduino) repo. 
  
@@ -99,9 +99,9 @@ Setting up the build environment is pretty straightforward, but it does involve 
 
 Using the arduino IDE Install: 
 (Sketch -> Include Library -> Manage Libraries...)
- - SD
- - TFT_eSPI
- - lvgl
+ - SD, Version 1.3.0 or later. 
+ - TFT_eSPI, Version 2.5.43 or later. 
+ - lvgl, Version 8.4.0 exactly. 
  - arduinoFFT (for debugging, optional)
  
  Navigate to your a libraries folder (likely /home/[name]/Arduino/libraries) and clone the [arduinoLua](https://github.com/blackketter/LuaArduino) repo. 
