@@ -2,6 +2,7 @@
 
 min_hue_gap = 0.1
 max_bubbles = 100
+next_hue_range = 0.35
 
 add_param("n_bubbles", 2, max_bubbles, 1, 30)
 add_param("speed", 0, 0.5, 0.02, 0.1)
@@ -10,7 +11,7 @@ add_param("power", 0.1, 4, 0.1, 1.5)
 hues = {}
 hues[1] = math.random()
 for i=2,max_bubbles do
-    hues[i] = (hues[i-1] + min_hue_gap + math.random() * (1 - min_hue_gap * 2)) % 1
+    hues[i] = (hues[i-1] + min_hue_gap + math.random() * (next_hue_range)) % 1
 end
 
 start = 0.0
