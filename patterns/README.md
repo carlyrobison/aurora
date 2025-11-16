@@ -1,0 +1,1 @@
+In order to push code to the teensyduino, you do something like `python upload.py --save /dev/cu.usbmodem127964901 GameOfLife.lua`
