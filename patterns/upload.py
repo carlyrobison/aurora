@@ -13,9 +13,9 @@ with serial.Serial(args.port, 115200) as ser:
     with open(args.filename) as f:
         data = f.read()
         if args.save:
-            ser.write(b'SAVE\n' + data.encode('ascii') + b'\0')
+            ser.write(b'save\n' + data.encode('ascii') + b'\0')
         else:
-            ser.write(b'LOAD\n' + data.encode('ascii') + b'\0')
+            ser.write(b'load\n' + data.encode('ascii') + b'\0')
 
     # Loop, printing anything received from the device.
     # Stop after we see an FPS message 5 times in a row.

@@ -12,6 +12,7 @@
 using std::vector;
 
 #define SD_CS 17
+#define MAX_COMMAND_ELEMENTS 5
 
 
 bool card_inserted = false;
@@ -65,6 +66,29 @@ void load_pattern(unsigned int idx) {
     current_pattern_idx = idx;
 }
 
+int splitInPlace(char *str, char **p, int maxSize) {
+    int n;
+    Serial.println("splitting");
+
+    *p++ = strtok(str, " ");
+    Serial.println(*(p-1));
+    for (n = 1; NULL != (*p++ = strtok(NULL, " ")); n++) {
+        Serial.println(*(p - 1));
+        if (maxSize == n)
+            break;
+    }
+
+    return n;
+}
+
+string readDataFromSerial() {
+    // Read the rest of the data
+    string data;
+    while (Serial.available()) {
+        data += (char) Serial.read();
+    }
+    return data;
+}
 
 
 void setup() {
@@ -76,7 +100,7 @@ void setup() {
 
     // Try to initialize the SD card.
     // If inserted, load the pattern list. If not, show the card removed page.
-    Serial.print(F("Initializing SD card..."));
+    Serial.print("Initializing SD card...");
     if (SD.begin(SD_CS)) {
         Serial.println(F("OK!"));
         card_inserted = true;
@@ -90,6 +114,46 @@ void setup() {
     }
 }
 
+void processCommand(char **commandElements, int elementCount) {
+  char *instruction = commandElements[0];
+
+  if (strcmp(instruction, "list") == 0) {
+    Serial.println("Listing patterns:");
+    for (unsigned int i = 0; i < patterns.size(); i++) {
+      Serial.println(patterns[i].name.c_str());
+    }
+    return;
+  } 
+  
+  if (strcmp(instruction, "select") == 0) {
+    if (elementCount < 2) {
+      Serial.println("Missing pattern name argument");
+      return;
+    }
+
+    for (unsigned int i = 0; i < patterns.size(); i++) {
+      if (strcmp(commandElements[1], patterns[i].name.c_str()) == 0) {
+        ui::selected_pattern = i;
+      }
+      Serial.print("Didn't find pattern named ");
+      Serial.println(commandElements[1]);
+    }
+    return;
+  } 
+  
+  if (strcmp(instruction, "load") == 0) {
+      lights::blank();
+      patterns[current_pattern_idx].upload_code(readDataFromSerial().c_str());
+      return;
+  }
+  
+  if (strcmp(instruction, "save") == 0) {
+      patterns[current_pattern_idx].save_code(readDataFromSerial().c_str());
+      return;
+  }
+  
+  Serial.println("Didn't recognize command");
+}
 
 void loop() {
     // Detect SD card insertion/removal.
@@ -139,26 +203,21 @@ void loop() {
     // Check to see if serial data is available. If so, write it to the SD card for the current pattern and reload the pattern.
     if (Serial.available()) {
         // Read first line to see what the command is.
-        string command = Serial.readStringUntil('\n').c_str();
+        char command[33];
+        strncpy(command, Serial.readStringUntil('\n').c_str(), 32);
 
-        // Read the rest of the data
-        string data;
-        while (Serial.available()) {
-            data += (char) Serial.read();
+        char *commandElements [MAX_COMMAND_ELEMENTS];
+        int elementCount = splitInPlace(command, commandElements, MAX_COMMAND_ELEMENTS);
+
+        Serial.print("Received command on serial: ");
+        for (int i = 0; i < elementCount; i++) {
+            Serial.print("`");
+            Serial.print(commandElements[i]);
+            Serial.print("` ");
         }
-
-        Serial.println("Received on serial: ");
-        Serial.println(command.c_str());
-        Serial.println(data.c_str());
-
-        if (command == "LOAD" || command == "SAVE") {
-            lights::blank();
-            patterns[current_pattern_idx].upload_code(data.c_str());
-        }
-
-        if (command == "SAVE") {
-            patterns[current_pattern_idx].save_code(data.c_str());
-        }
+        Serial.println();
+        
+        processCommand(commandElements, elementCount);
     }
 
     delay(1);
