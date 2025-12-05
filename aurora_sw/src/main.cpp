@@ -136,9 +136,9 @@ void processCommand(char **commandElements, int elementCount) {
             if (strcmp(commandElements[1], patterns[i].name.c_str()) == 0) {
                 ui::selected_pattern = i;
             }
-            Serial.print("Didn't find pattern named ");
-            Serial.println(commandElements[1]);
         }
+        Serial.print("Didn't find pattern named ");
+        Serial.println(commandElements[1]);
         return;
     }
 
