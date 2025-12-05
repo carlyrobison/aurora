@@ -26,6 +26,7 @@ const long pattern_update_interval = 20; // ms
 const long fps_update_millis = 1000;
 long last_fps_update_time = 0;
 long frames = 0;
+bool print_fps = true;
 
 
 vector<Pattern> get_patterns_from_sd(File dir) {
@@ -139,7 +140,21 @@ void processCommand(char **commandElements, int elementCount) {
       Serial.println(commandElements[1]);
     }
     return;
-  } 
+  }
+
+  if (strcmp(instruction, "fps") == 0) {
+    if (elementCount < 2) {
+      Serial.println("Missing pattern name argument");
+    } else if (strcmp(commandElements[1], "stop") == 0) {
+      print_fps = false;
+    } else if (strcmp(commandElements[1], "start") == 0) {
+      print_fps = true;
+    } else {
+      Serial.print("Didn't recognize argument to 'fps' command ");
+      Serial.println(commandElements[1]);
+    }
+    return;
+  }
   
   if (strcmp(instruction, "load") == 0) {
       lights::blank();
@@ -192,7 +207,9 @@ void loop() {
         // Serial.print("Pattern update took: "); Serial.print(millis() - start); Serial.println("ms");
 
         if (millis() - last_fps_update_time >= fps_update_millis) {
-            Serial.print("FPS: "); Serial.println(1000.0 * (double) frames / (double) (millis() - last_fps_update_time));
+            if (print_fps) {
+              Serial.print("FPS: "); Serial.println(1000.0 * (double) frames / (double) (millis() - last_fps_update_time));
+            }
             last_fps_update_time = millis();
             frames = 0;
         }
