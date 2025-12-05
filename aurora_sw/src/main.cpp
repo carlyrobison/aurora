@@ -116,58 +116,58 @@ void setup() {
 }
 
 void processCommand(char **commandElements, int elementCount) {
-  char *instruction = commandElements[0];
+    char *instruction = commandElements[0];
 
-  if (strcmp(instruction, "list") == 0) {
-    Serial.println("Listing patterns:");
-    for (unsigned int i = 0; i < patterns.size(); i++) {
-      Serial.println(patterns[i].name.c_str());
-    }
-    return;
-  } 
-  
-  if (strcmp(instruction, "select") == 0) {
-    if (elementCount < 2) {
-      Serial.println("Missing pattern name argument");
-      return;
+    if (strcmp(instruction, "list") == 0) {
+        Serial.println("Listing patterns:");
+        for (unsigned int i = 0; i < patterns.size(); i++) {
+            Serial.println(patterns[i].name.c_str());
+        }
+        return;
+    } 
+    
+    if (strcmp(instruction, "select") == 0) {
+        if (elementCount < 2) {
+            Serial.println("Missing pattern name argument");
+            return;
+        }
+
+        for (unsigned int i = 0; i < patterns.size(); i++) {
+            if (strcmp(commandElements[1], patterns[i].name.c_str()) == 0) {
+                ui::selected_pattern = i;
+            }
+            Serial.print("Didn't find pattern named ");
+            Serial.println(commandElements[1]);
+        }
+        return;
     }
 
-    for (unsigned int i = 0; i < patterns.size(); i++) {
-      if (strcmp(commandElements[1], patterns[i].name.c_str()) == 0) {
-        ui::selected_pattern = i;
-      }
-      Serial.print("Didn't find pattern named ");
-      Serial.println(commandElements[1]);
+    if (strcmp(instruction, "fps") == 0) {
+        if (elementCount < 2) {
+            Serial.println("Missing pattern name argument");
+        } else if (strcmp(commandElements[1], "stop") == 0) {
+            print_fps = false;
+        } else if (strcmp(commandElements[1], "start") == 0) {
+            print_fps = true;
+        } else {
+            Serial.print("Didn't recognize argument to 'fps' command ");
+            Serial.println(commandElements[1]);
+        }
+        return;
     }
-    return;
-  }
-
-  if (strcmp(instruction, "fps") == 0) {
-    if (elementCount < 2) {
-      Serial.println("Missing pattern name argument");
-    } else if (strcmp(commandElements[1], "stop") == 0) {
-      print_fps = false;
-    } else if (strcmp(commandElements[1], "start") == 0) {
-      print_fps = true;
-    } else {
-      Serial.print("Didn't recognize argument to 'fps' command ");
-      Serial.println(commandElements[1]);
+    
+    if (strcmp(instruction, "load") == 0) {
+        lights::blank();
+        patterns[current_pattern_idx].upload_code(readDataFromSerial().c_str());
+        return;
     }
-    return;
-  }
-  
-  if (strcmp(instruction, "load") == 0) {
-      lights::blank();
-      patterns[current_pattern_idx].upload_code(readDataFromSerial().c_str());
-      return;
-  }
-  
-  if (strcmp(instruction, "save") == 0) {
-      patterns[current_pattern_idx].save_code(readDataFromSerial().c_str());
-      return;
-  }
-  
-  Serial.println("Didn't recognize command");
+    
+    if (strcmp(instruction, "save") == 0) {
+        patterns[current_pattern_idx].save_code(readDataFromSerial().c_str());
+        return;
+    }
+    
+    Serial.println("Didn't recognize command");
 }
 
 void loop() {
