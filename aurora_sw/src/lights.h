@@ -13,7 +13,7 @@
 const int n_leds[N_STRIPS] = {529, 529};
 const int led_dirs[N_STRIPS] = {-1, 1};
 
-const byte pin_list[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+const byte pin_list[8] = {1, 2, 3, 4, 5, 6, 7};
 
 
 namespace lights {
