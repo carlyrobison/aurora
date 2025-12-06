@@ -18,8 +18,8 @@ struct Param {
 
 class Pattern {
 public:
-    Pattern(int idx, string name, string filename):
-        idx(idx), name(name), filename(filename) {
+    Pattern(int idx, string name):
+        idx(idx), name(name) {
         loaded = false;
         L = NULL;
     }

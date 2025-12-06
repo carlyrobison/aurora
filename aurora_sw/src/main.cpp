@@ -41,7 +41,7 @@ vector<Pattern> get_patterns_from_sd(File dir) {
             // If it has a lua extension, add it to the list.
             if (filename.substr(filename.length() - 4) == ".lua") {
                 string name = filename.substr(0, filename.length() - 4);
-                patterns.push_back(Pattern(patterns.size(), name, filename));
+                patterns.push_back(Pattern(patterns.size(), name));
             }
         }
         entry.close();
@@ -82,15 +82,6 @@ int splitInPlace(char *str, char **p, int maxSize) {
     return n;
 }
 
-string readDataFromSerial() {
-    // Read the rest of the data
-    string data;
-    while (Serial.available()) {
-        data += (char) Serial.read();
-    }
-    return data;
-}
-
 
 void setup() {
     Serial.begin(115200);
@@ -115,6 +106,15 @@ void setup() {
     }
 }
 
+int findPatternIndex(char *name) {
+    for (unsigned int i = 0; i < patterns.size(); i++) {
+        if (strcmp(name, patterns[i].name.c_str()) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 void processCommand(char **commandElements, int elementCount) {
     char *instruction = commandElements[0];
 
@@ -132,13 +132,14 @@ void processCommand(char **commandElements, int elementCount) {
             return;
         }
 
-        for (unsigned int i = 0; i < patterns.size(); i++) {
-            if (strcmp(commandElements[1], patterns[i].name.c_str()) == 0) {
-                ui::selected_pattern = i;
-            }
+        int foundPatternIndex = findPatternIndex(commandElements[1]);
+
+        if (foundPatternIndex >= 0) {
+            ui::selected_pattern = foundPatternIndex;
+        } else {
+            Serial.print("Didn't find pattern named ");
+            Serial.println(commandElements[1]);
         }
-        Serial.print("Didn't find pattern named ");
-        Serial.println(commandElements[1]);
         return;
     }
 
@@ -156,14 +157,19 @@ void processCommand(char **commandElements, int elementCount) {
         return;
     }
     
-    if (strcmp(instruction, "load") == 0) {
-        lights::blank();
-        patterns[current_pattern_idx].upload_code(readDataFromSerial().c_str());
-        return;
-    }
-    
-    if (strcmp(instruction, "save") == 0) {
-        patterns[current_pattern_idx].save_code(readDataFromSerial().c_str());
+    if (strcmp(instruction, "upload") == 0) {
+        if (elementCount < 2) {
+            Serial.println("Missing pattern name argument");
+            return;
+        }
+
+        int patternIndex = findPatternIndex(commandElements[1]);
+        if (patternIndex < 0) {
+            patternIndex = patterns.size();
+            patterns.push_back(Pattern(patternIndex, commandElements[1]));
+        }
+
+        patterns[patternIndex].save_code(Serial.readStringUntil(0x04).c_str());
         return;
     }
     
@@ -223,18 +229,20 @@ void loop() {
         char command[33];
         strncpy(command, Serial.readStringUntil('\n').c_str(), 32);
 
-        char *commandElements [MAX_COMMAND_ELEMENTS];
-        int elementCount = splitInPlace(command, commandElements, MAX_COMMAND_ELEMENTS);
+        if (strlen(command) > 0) {
+            char *commandElements [MAX_COMMAND_ELEMENTS];
+            int elementCount = splitInPlace(command, commandElements, MAX_COMMAND_ELEMENTS);
 
-        Serial.print("Received command on serial: ");
-        for (int i = 0; i < elementCount; i++) {
-            Serial.print("`");
-            Serial.print(commandElements[i]);
-            Serial.print("` ");
-        }
-        Serial.println();
-        
-        processCommand(commandElements, elementCount);
+            Serial.print("Received command on serial: ");
+            for (int i = 0; i < elementCount; i++) {
+                Serial.print("`");
+                Serial.print(commandElements[i]);
+                Serial.print("` ");
+            }
+            Serial.println();
+            
+            processCommand(commandElements, elementCount);
+        } 
     }
 
     delay(1);

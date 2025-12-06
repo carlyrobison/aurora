@@ -113,6 +113,9 @@ void Pattern::update() {
 
 
 void Pattern::load() {
+    char filename[128];
+    strcpy(filename, name.c_str());
+    strcat(filename, ".lua");
     lua_setup();
     load_code(read_from_sd(filename));
 }
@@ -137,7 +140,13 @@ void Pattern::upload_code(string code) {
 
 
 void Pattern::save_code(string code) {
+    char filename[128];
+    strcpy(filename, name.c_str());
+    strcat(filename, ".lua");
     write_to_sd(filename, code);
+    if (loaded) {
+        upload_code(code);
+    }
 }
 
 

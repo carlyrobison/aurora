@@ -1,22 +1,8 @@
 import argparse
 import serial
+from pathlib import Path
 
-parser = argparse.ArgumentParser(description='Upload a pattern to Aurora.')
-parser.add_argument('port', help='Serial port to use')
-parser.add_argument('filename', help='Pattern file to upload')
-parser.add_argument('--save', action='store_true', help='Save the pattern to the SD card')
-
-args = parser.parse_args()
-
-with serial.Serial(args.port, 115200) as ser:
-    # Read the file and send it over serial.
-    with open(args.filename) as f:
-        data = f.read()
-        if args.save:
-            ser.write(b'save\n' + data.encode('ascii') + b'\0')
-        else:
-            ser.write(b'load\n' + data.encode('ascii') + b'\0')
-
+def check_serial_out(ser: serial.Serial):
     # Loop, printing anything received from the device.
     # Stop after we see an FPS message 5 times in a row.
     fps_count = 0
@@ -31,3 +17,27 @@ with serial.Serial(args.port, 115200) as ser:
 
         if fps_count >= 5:
             break
+
+def upload_file(file: Path, ser: serial.Serial):
+    name = file.name.split(".")[0]
+    ser.write(f'upload {name}\n{file.read_text()}'.encode('ascii'))
+    ser.write(0x04) # EOT character
+    check_serial_out(ser)
+
+parser = argparse.ArgumentParser(description='Upload a pattern to Aurora.')
+parser.add_argument('port', help='Serial port to use')
+parser.add_argument('filename', help='Pattern file to upload. If a path to a folder, uploads all lua files in that folder (not recursively).')
+
+args = parser.parse_args()
+
+with serial.Serial(args.port, 115200) as ser:
+
+    file = Path(args.filename)
+    if file.is_dir():
+        for child in file.iterdir():
+            if child.is_file() and child.name.endswith(".lua"):
+                print(f"Uploading {child}")
+                upload_file(child, ser)
+    else:
+        upload_file(file, ser)
+        ser.write(f'select {args.filename.split(".")[0]}\n'.encode('ascii'))
