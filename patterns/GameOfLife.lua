@@ -7,7 +7,16 @@ for i=1, N_LEDS do
     led_state[i] = math.floor(math.random(0,1)+0.5)
 end
 
+iteration = 0
+
 function update()
+
+    if iteration < math.floor(step_delay * 20) then
+        iteration = iteration + 1
+        return
+    else
+        iteration = 0
+    end
 
     local tmp = {}
 
