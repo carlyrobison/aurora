@@ -69,12 +69,9 @@ void load_pattern(unsigned int idx) {
 
 int splitInPlace(char *str, char **p, int maxSize) {
     int n;
-    Serial.println("splitting");
 
     *p++ = strtok(str, " ");
-    Serial.println(*(p-1));
     for (n = 1; NULL != (*p++ = strtok(NULL, " ")); n++) {
-        Serial.println(*(p - 1));
         if (maxSize == n)
             break;
     }
