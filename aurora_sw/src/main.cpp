@@ -167,6 +167,11 @@ void processCommand(char **commandElements, int elementCount) {
         }
 
         patterns[patternIndex].save_code(Serial.readStringUntil(0x04).c_str());
+        
+        if (patterns[patternIndex].loaded || ui::selected_pattern == patternIndex) {
+            patterns[patternIndex].unload();
+            patterns[patternIndex].load();
+        }
         return;
     }
     

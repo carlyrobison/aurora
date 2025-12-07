@@ -144,9 +144,6 @@ void Pattern::save_code(string code) {
     strcpy(filename, name.c_str());
     strcat(filename, ".lua");
     write_to_sd(filename, code);
-    if (loaded) {
-        upload_code(code);
-    }
 }
 
 
