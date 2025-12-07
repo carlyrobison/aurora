@@ -40,4 +40,4 @@ with serial.Serial(args.port, 115200) as ser:
                 upload_file(child, ser)
     else:
         upload_file(file, ser)
-        ser.write(f'select {args.filename.split(".")[0]}\n'.encode('ascii'))
+        ser.write(f'select {file.name.split(".")[0]}\n'.encode('ascii'))
