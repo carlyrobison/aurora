@@ -15,7 +15,7 @@ def check_serial_out(ser: serial.Serial):
 
         print(line, end='')
 
-        if fps_count >= 5:
+        if fps_count >= 2:
             break
 
 def upload_file(file: Path, ser: serial.Serial):
@@ -41,3 +41,4 @@ with serial.Serial(args.port, 115200) as ser:
     else:
         upload_file(file, ser)
         ser.write(f'select {file.name.split(".")[0]}\n'.encode('ascii'))
+        check_serial_out(ser)
